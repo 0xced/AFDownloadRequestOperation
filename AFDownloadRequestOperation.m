@@ -167,8 +167,8 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(NSInteger bytes
         if([self isCancelled]) {
             // should we clean up? most likely we don't.
             if (self.isDeletingTempFileOnCancel) {
-                [self deleteTempFileWithError:&localError];
-                if (localError) {
+                BOOL deleted = [self deleteTempFileWithError:&localError];
+                if (!deleted) {
                     _fileError = localError;
                 }
             }
@@ -182,8 +182,8 @@ typedef void (^AFURLConnectionProgressiveOperationProgressBlock)(NSInteger bytes
                 if (self.shouldOverwrite) {
                     [fileManager removeItemAtPath:_targetPath error:NULL]; // avoid "File exists" error
                 }
-                [fileManager moveItemAtPath:[self tempPath] toPath:_targetPath error:&localError];
-                if (localError) {
+                BOOL moved = [fileManager moveItemAtPath:[self tempPath] toPath:_targetPath error:&localError];
+                if (!moved) {
                     _fileError = localError;
                 }
             }
